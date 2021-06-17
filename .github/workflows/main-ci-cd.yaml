@@ -33,7 +33,7 @@ jobs:
         run: mvn clean test
 
   build:
-    runs-on : ubuntu-latest
+    runs-on: ubuntu-latest
     name: Maven Build Package and Build Image Docker on Remote Server
     needs: [test]
     env: 
@@ -61,7 +61,7 @@ jobs:
           host: ${{ secrets.SSH_IP_PUBLIC }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
-          sudo docker build -t ${{ env.APPLICATION_NAME }}:${GITHUB_SHA::8} .
+          sudo docker build -t ${{ env.APPLICATION_NAME }}:${GITHUB_SHA::8} . ; exit 1
 
   deploy:
     runs-on: ubuntu-latest
