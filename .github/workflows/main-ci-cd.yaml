@@ -52,7 +52,7 @@ jobs:
           java-version: 11.0.4
       - name: Cache Maven packages
         uses: actions/cache@v2
-          with:
+        with:
           path: ~/.m2
           key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
           restore-keys: ${{ runner.os }}-m2
