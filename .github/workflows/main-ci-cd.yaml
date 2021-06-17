@@ -62,9 +62,11 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
           sudo docker build -t ${{ env.APPLICATION_NAME }}:${GITHUB_SHA::8} .
+
   deploy:
     runs-on: ubuntu-latest
     needs: [test, build]
+    name: Deploy docker to server
     env:
       APPLICATION_NAME: sandbox-alami
       INTERNAL_PORT: 8888
