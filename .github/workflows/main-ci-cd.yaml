@@ -68,5 +68,5 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
             echo ${{ env.VERSION }}
-            sudo docker build -t ${{ env.APPLICATION_NAME }}:${{ env.VERSION }} hello-project/workspace/
+            sudo docker build -t ${{ env.APPLICATION_NAME }}:${{ env.VERSION }} hello-project/.
             if [ $(docker ps | grep ${{ env.APPLICATION_NAME }} | wc -l) -eq 1 ]; then docker rm -f ${{ env.APPLICATION_NAME }};sleep 10;sudo docker run -d --restart always --name ${{ env.APPLICATION_NAME }} -p ${{ env.PUBLISHED_PORT }}:${{ env.INTERNAL_PORT }} ${{ env.APPLICATION_NAME }}:${{ env.VERSION }} else sudo docker run -d --restart always --name ${{ env.APPLICATION_NAME }} -p ${{ env.PUBLISHED_PORT }}:${{ env.INTERNAL_PORT }} ${{ env.APPLICATION_NAME }}:${{ env.VERSION }}; exit 1 fi
