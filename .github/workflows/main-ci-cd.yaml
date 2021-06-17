@@ -29,6 +29,12 @@ jobs:
         uses: actions/setup-java@v1
         with:
           java-version: 11.0.4
+      - name: Cache Maven packages
+        uses: actions/cache@v2
+        with:
+          path: ~/.m2
+          key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
+          restore-keys: ${{ runner.os }}-m2
       - name: Maven Test
         run: mvn clean test
 
@@ -44,6 +50,12 @@ jobs:
         uses: actions/setup-java@v1
         with:
           java-version: 11.0.4
+      - name: Cache Maven packages
+        uses: actions/cache@v2
+          with:
+          path: ~/.m2
+          key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
+          restore-keys: ${{ runner.os }}-m2
       - name: maven build package
         run: mvn clean compile vertx:package
       - name: copy jar file and dockerfile to remote server
@@ -72,6 +84,7 @@ jobs:
       APPLICATION_NAME: sandbox-alami
       INTERNAL_PORT: 8888
       PUBLISHED_PORT: 8888
+      VERSION: ${GITHUB_SHA::6}
     steps:
       - name: Deploy docker
         uses: appleboy/ssh-action@master
@@ -80,6 +93,6 @@ jobs:
           host: ${{ secrets.SSH_IP_PUBLIC }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
-            echo ${GITHUB_SHA::6}
-            sudo docker build -t ${{ env.APPLICATION_NAME }}:$GITHUB_REF.$GITHUB_SHA hello-project/.
-            if [ $(docker ps | grep ${{ env.APPLICATION_NAME }} | wc -l) -eq 1 ]; then docker rm -f ${{ env.APPLICATION_NAME }};sleep 10;sudo docker run -d --restart always --name ${{ env.APPLICATION_NAME }} -p ${{ env.PUBLISHED_PORT }}:${{ env.INTERNAL_PORT }} ${{ env.APPLICATION_NAME }}:$GITHUB_REF.$GITHUB_SHA else sudo docker run -d --restart always --name ${{ env.APPLICATION_NAME }} -p ${{ env.PUBLISHED_PORT }}:${{ env.INTERNAL_PORT }} ${{ env.APPLICATION_NAME }}:$GITHUB_REF.$GITHUB_SHA; exit 1 fi
+            echo ${{ env.VERSION }}
+            sudo docker build -t ${{ env.APPLICATION_NAME }}:${{ env.VERSION hello-project/.
+            if [ $(docker ps | grep ${{ env.APPLICATION_NAME }} | wc -l) -eq 1 ]; then docker rm -f ${{ env.APPLICATION_NAME }};sleep 10;sudo docker run -d --restart always --name ${{ env.APPLICATION_NAME }} -p ${{ env.PUBLISHED_PORT }}:${{ env.INTERNAL_PORT }} ${{ env.APPLICATION_NAME }}:${{ env.VERSION }} else sudo docker run -d --restart always --name ${{ env.APPLICATION_NAME }} -p ${{ env.PUBLISHED_PORT }}:${{ env.INTERNAL_PORT }} ${{ env.APPLICATION_NAME }}:${{ env.VERSION }}; exit 1 fi
