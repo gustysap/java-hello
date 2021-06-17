@@ -46,14 +46,16 @@ jobs:
           java-version: 11.0.4
       - name: maven build package
         run: mvn clean compile vertx:package
-      - name: copy jar file to remote server
+      - name: copy jar file and dockerfile to remote server
+        uses: appleboy/scp-action@master
         uses: garygrossgarten/github-action-scp@release
         with:
-          local: target/*.jar
-          remote: ./application.jar
+          source: "/home/runner/work/hello-project/hello-project/target/*.jar,/home/runner/work/hello-project/hello-project/Dockerfile"
+          target: "hello-project"
           username: ${{ secrets.SSH_USERNAME }}
           host: ${{ secrets.SSH_IP_PUBLIC }}
-          privateKey: ${{ secrets.SSH_PRIVATE_KEY }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          strip_components: 1
 #      - name: Docker Build
 #        uses: appleboy/ssh-action@master
 #        with:
@@ -79,5 +81,5 @@ jobs:
           host: ${{ secrets.SSH_IP_PUBLIC }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
-            sudo docker build -t ${{ env.APPLICATION_NAME }}:${GITHUB_SHA::8} .
+            sudo docker build -t ${{ env.APPLICATION_NAME }}:${GITHUB_SHA::8} hello-project/.
             if [ $(docker ps | grep ${{ env.APPLICATION_NAME }} | wc -l) -eq 1 ]; then docker rm -f ${{ env.APPLICATION_NAME }};sleep 10;sudo docker run -d --restart always --name ${{ env.APPLICATION_NAME }} -p ${{ env.PUBLISHED_PORT }}:${{ env.INTERNAL_PORT }} ${{ env.APPLICATION_NAME }}:${GITHUB_SHA::8} else sudo docker run -d --restart always --name ${{ env.APPLICATION_NAME }} -p ${{ env.PUBLISHED_PORT }}:${{ env.INTERNAL_PORT }} ${{ env.APPLICATION_NAME }}:${GITHUB_SHA::8}; exit 1 fi
