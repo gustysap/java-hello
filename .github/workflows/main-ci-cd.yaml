@@ -53,7 +53,7 @@ jobs:
           remote: ./application.jar
           username: ${{ secrets.SSH_USERNAME }}
           host: ${{ secrets.SSH_IP_PUBLIC }}
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          privateKey: ${{ secrets.SSH_PRIVATE_KEY }}
 #      - name: Docker Build
 #        uses: appleboy/ssh-action@master
 #        with:
