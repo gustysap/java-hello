@@ -1,0 +1,79 @@
+name: Release - Test, Build & Redeploy
+
+on:
+  push:
+    branches:
+      - 'sandbox'
+
+jobs:
+
+  compile:
+    name: Java Compile
+    runs-on: ubuntu-18.04
+    steps:
+      - uses: actions/checkout@v1
+      - name: Set up JDK 11
+        uses: actions/setup-java@v1
+        with:
+          java-version: 11.0.4
+      - name: Maven Compile
+        run: mvn clean compile
+
+  test:
+    name: JUnit Test
+    runs-on: ubuntu-18.04
+    needs: [compile]
+    steps:
+      - uses: actions/checkout@v1
+      - name: Set up JDK 11
+        uses: actions/setup-java@v1
+        with:
+          java-version: 11.0.4
+      - name: Maven Test
+        run: mvn clean test
+
+  build:
+    runs-on : ubuntu-latest
+    name: Maven Build Package and Build Image Docker on Remote Server
+    needs: [test]
+    env: APPLICATION_NAME: sandbox-alami
+    steps:
+      - uses: actions/checkout@v1
+      - name: Set up JDK 11
+        uses: actions/setup-java@v1
+        with:
+          java-version: 11.0.4
+      - name: maven build package
+        run: mvn clean compile vertx:package
+      - name: copy jar file to remote server
+        uses: uses: garygrossgarten/github-action-scp@release
+        with:
+          local: target/*.jar
+          remote: ./application.jar
+          username: ${{ secrets.SSH_USERNAME }}
+          host: ${{ secrets.SSH_IP_PUBLIC }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+      - name: running docker info
+        uses: appleboy/ssh-action@master
+        with:
+          username: ${{ secrets.SSH_USERNAME }}
+          host: ${{ secrets.SSH_IP_PUBLIC }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+          sudo docker build -t ${{ env.APPLICATION_NAME }}:${GITHUB_SHA::8} .
+  deploy:
+    runs-on: ubuntu-latest
+    needs: [test, build]
+    env:
+      APPLICATION_NAME: sandbox-alami
+      INTERNAL_PORT: 8888
+      PUBLISHED_PORT: 8888
+    steps:
+      - name: running docker info
+        uses: appleboy/ssh-action@master
+        with:
+          username: ${{ secrets.SSH_USERNAME }}
+          host: ${{ secrets.SSH_IP_PUBLIC }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            if [ $(docker ps | grep ${{ env.APPLICATION_NAME }} | wc -l) -eq 1 ]; then docker rm -f ${{ env.APPLICATION_NAME }};sleep 10;sudo docker run -d --restart always --name ${{ env.APPLICATION_NAME }} -p ${{ env.PUBLISHED_PORT }}:${{ env.INTERNAL_PORT }} ${{ APPLICATION_NAME }}:${GITHUB_SHA::8} else sudo docker run -d --restart always --name ${{ env.APPLICATION_NAME }} -p ${{ env.PUBLISHED_PORT }}:${{ env.INTERNAL_PORT }} ${{ APPLICATION_NAME }}:${GITHUB_SHA::8}; exit 1 fi
