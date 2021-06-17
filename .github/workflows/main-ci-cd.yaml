@@ -80,4 +80,4 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
             sudo docker build -t ${{ env.APPLICATION_NAME }}:${GITHUB_SHA::8} .
-            if [ $(docker ps | grep ${{ env.APPLICATION_NAME }} | wc -l) -eq 1 ]; then docker rm -f ${{ env.APPLICATION_NAME }};sleep 10;sudo docker run -d --restart always --name ${{ env.APPLICATION_NAME }} -p ${{ env.PUBLISHED_PORT }}:${{ env.INTERNAL_PORT }} ${{ APPLICATION_NAME }}:${GITHUB_SHA::8} else sudo docker run -d --restart always --name ${{ env.APPLICATION_NAME }} -p ${{ env.PUBLISHED_PORT }}:${{ env.INTERNAL_PORT }} ${{ APPLICATION_NAME }}:${GITHUB_SHA::8}; exit 1 fi
+            if [ $(docker ps | grep ${{ env.APPLICATION_NAME }} | wc -l) -eq 1 ]; then docker rm -f ${{ env.APPLICATION_NAME }};sleep 10;sudo docker run -d --restart always --name ${{ env.APPLICATION_NAME }} -p ${{ env.PUBLISHED_PORT }}:${{ env.INTERNAL_PORT }} ${{ env.APPLICATION_NAME }}:${GITHUB_SHA::8} else sudo docker run -d --restart always --name ${{ env.APPLICATION_NAME }} -p ${{ env.PUBLISHED_PORT }}:${{ env.INTERNAL_PORT }} ${{ env.APPLICATION_NAME }}:${GITHUB_SHA::8}; exit 1 fi
