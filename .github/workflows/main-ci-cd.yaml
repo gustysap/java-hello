@@ -47,7 +47,7 @@ jobs:
       - name: maven build package
         run: mvn clean compile vertx:package
       - name: copy jar file to remote server
-        uses: uses: garygrossgarten/github-action-scp@release
+        uses: garygrossgarten/github-action-scp@release
         with:
           local: target/*.jar
           remote: ./application.jar
