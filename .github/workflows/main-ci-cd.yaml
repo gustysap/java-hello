@@ -47,7 +47,7 @@ jobs:
           username: ${{ secrets.SSH_USERNAME }}
           host: ${{ secrets.SSH_IP_PUBLIC }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
-          script: "sudo docker build -t ${{ env.APPLICATION_NAME }}:${{ env.VERSION }} hello-project/. ; exit 1 "
+          script: "sudo docker build -t ${{ env.APPLICATION_NAME }}:${{ env.VERSION }} hello-project/. "
 
   deploy:
     name: Deploy docker to server
