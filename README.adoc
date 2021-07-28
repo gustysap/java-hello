@@ -1,7 +1,3 @@
-= ALAMI Sharia Hello-Project
-
-image:https://img.shields.io/badge/vert.x-4.0.0-purple.svg[link="https://vertx.io"]
-
 This application was generated using http://start.vertx.io
 
 == Building
