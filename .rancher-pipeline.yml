@@ -6,7 +6,7 @@ stages:
       buildContext: .
       tag: testing/java-hello:${CICD_EXECUTION_SEQUENCE}
       pushRemote: true
-      registry: https://registry-infra.jaklingkoindonesia.co.id
+      registry: registry-infra.jaklingkoindonesia.co.id
     env:
       PLUGIN_DEBUG: "true"
       PLUGIN_INSECURE: "true"
