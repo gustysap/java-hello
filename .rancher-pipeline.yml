@@ -5,8 +5,8 @@ stages:
       dockerfilePath: ./Dockerfile
       buildContext: .
       tag: testing/java-hello:${CICD_EXECUTION_SEQUENCE}
-      registry: registry-infra.jaklingkoindonesia.co.id
       pushRemote: true
+      registry: https://registry-infra.jaklingkoindonesia.co.id
     env:
       PLUGIN_DEBUG: "true"
       PLUGIN_INSECURE: "true"
