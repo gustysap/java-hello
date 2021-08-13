@@ -5,7 +5,11 @@ stages:
       dockerfilePath: ./Dockerfile
       buildContext: .
       tag: testing/java-hello:${CICD_EXECUTION_SEQUENCE}
-      registry: 127.0.0.1:34634
+      registry: registry-infra.jaklingkoindonesia.co.id
+      pushRemote: true
+    env:
+      PLUGIN_DEBUG: "true"
+      PLUGIN_INSECURE: "true"
 - name: Deploy
   steps:
   - applyYamlConfig:
